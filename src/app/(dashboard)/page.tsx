@@ -6,7 +6,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <h3 className="text-gray-500 text-sm font-medium">Total Products</h3>
-          <p className="text-3xl font-bold mt-2">124</p>
+          <p className="text-3xl font-bold mt-2">155</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <h3 className="text-gray-500 text-sm font-medium">Out of Stock</h3>
