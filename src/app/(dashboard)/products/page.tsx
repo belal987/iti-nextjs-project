@@ -35,8 +35,8 @@ export default async function ProductsPage() {
   return (
     <div className="p-8 max-w-7xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Products</h1>
-        <p className="mt-2 text-gray-600">Manage your product inventory and details.</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-neutral-100">Products</h1>
+        <p className="mt-2 text-gray-600 dark:text-neutral-400">Manage your product inventory and details.</p>
       </div>
       
       <ProductManager products={products} categories={categories} />
