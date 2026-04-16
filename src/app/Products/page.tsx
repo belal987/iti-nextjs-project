@@ -7,50 +7,71 @@ import { useRouter } from "next/navigation";
 export default function ProductsPage() {
   const { data: session, status } = useSession();
   const router = useRouter();
-
-  // 1. كل الـ States لازم تكون فوق
-  const [products, setProducts] = useState([
-    { id: 1, name: 'Sample Watch', price: 250, stock: 10, discount: 5, category: 'Electronics' },
-  ]);
+  
+  const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  // 2. الـ Effects
+  // 1. دالة لجلب البيانات من الـ Database
+  const fetchProducts = async () => {
+    try {
+      const res = await fetch('/api/products');
+      const data = await res.json();
+      setProducts(data);
+    } catch (error) {
+      console.error("Failed to fetch products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
+    } else if (status === "authenticated") {
+      fetchProducts();
     }
   }, [status, router]);
 
-  // 3. الدوال (Functions)
-  const addProduct = (newProduct: any) => {
-    setProducts([...products, { ...newProduct, id: Date.now() }]);
-  };
-
-  const deleteProduct = (id: number) => {
-    if (confirm('Are you sure you want to delete this product?')) {
-      setProducts(products.filter(p => p.id !== id));
+  // 2. دالة إضافة منتج حقيقي للداتا بيز
+  const addProduct = async (productData: any) => {
+    try {
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(productData),
+      });
+      if (res.ok) {
+        fetchProducts(); // بنحدث الجدول بعد الإضافة
+      }
+    } catch (error) {
+      alert("Error adding product");
     }
   };
 
-  // 4. شروط الـ Render (بتتحط بعد الـ Hooks)
-  if (status === "loading") {
-    return (
-      <div className="flex justify-center items-center min-h-screen">
-        <p className="text-xl font-semibold">Loading...</p>
-      </div>
-    );
-  }
+  // 3. دالة حذف منتج من الداتا بيز
+  const deleteProduct = async (id: string) => {
+    if (confirm('Are you sure you want to delete this product?')) {
+      try {
+        const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+          setProducts(products.filter((p: any) => p._id !== id));
+        }
+      } catch (error) {
+        alert("Error deleting product");
+      }
+    }
+  };
 
-  // لو مش مسجل دخول، بنرجع null لحد ما الـ useEffect تعمل redirect
-  if (status === "unauthenticated") return null;
+  if (status === "loading" || loading) return <p className="p-8 text-center">Loading Data...</p>;
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-6xl mx-auto">
         <header className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Products Management</h1>
-            <p className="text-gray-500">Manage your inventory, prices, and categories.</p>
+            <h1 className="text-3xl font-bold text-gray-900">Inventory Management</h1>
+            <p className="text-gray-500">Real-time data from MongoDB.</p>
           </div>
           <button 
             onClick={() => setIsModalOpen(true)}
@@ -64,25 +85,22 @@ export default function ProductsPage() {
           <table className="w-full text-left">
             <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                    <th className="px-6 py-4">Product Name</th>
-                    <th className="px-6 py-4">Price</th>
-                    <th className="px-6 py-4">Stock</th>
-                    <th className="px-6 py-4">Discount</th>
-                    <th className="px-6 py-4 text-center">Actions</th>
+                    <th className="px-6 py-4 font-semibold text-gray-600">Product Name</th>
+                    <th className="px-6 py-4 font-semibold text-gray-600">Price</th>
+                    <th className="px-6 py-4 font-semibold text-gray-600">Stock</th>
+                    <th className="px-6 py-4 font-semibold text-gray-600">Actions</th>
                 </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {products.map((product: any) => (
-                <tr key={product.id} className="hover:bg-gray-50/50 transition">
-                  <td className="px-6 py-4 font-medium">{product.name}</td>
-                  <td className="px-6 py-4">${product.price}</td>
-                  <td className="px-6 py-4 text-blue-600 font-bold">{product.stock || 0} units</td>
-                  <td className="px-6 py-4 text-green-600">%{product.discount || 0}</td>
+                <tr key={product._id} className="hover:bg-gray-50/50 transition">
+                  <td className="px-6 py-4 font-medium text-gray-900">{product.name}</td>
+                  <td className="px-6 py-4 text-gray-600">${product.price}</td>
+                  <td className="px-6 py-4 font-bold text-blue-600">{product.stock} units</td>
                   <td className="px-6 py-4 text-center">
-                    <button className="text-indigo-600 hover:text-indigo-900 px-3 py-1 font-medium transition">Edit</button>
                     <button 
-                      onClick={() => deleteProduct(product.id)}
-                      className="text-red-600 hover:text-red-900 px-3 py-1 font-medium transition"
+                      onClick={() => deleteProduct(product._id)}
+                      className="text-red-600 hover:text-red-900 px-3 py-1 font-medium"
                     >
                       Delete
                     </button>
@@ -91,9 +109,7 @@ export default function ProductsPage() {
               ))}
               {products.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-10 text-center text-gray-500 italic">
-                    No products found. Click "Add Product" to create one.
-                  </td>
+                  <td colSpan={4} className="px-6 py-10 text-center text-gray-500 italic">No products found.</td>
                 </tr>
               )}
             </tbody>
@@ -102,10 +118,7 @@ export default function ProductsPage() {
       </div>
 
       {isModalOpen && (
-        <ProductForm 
-          onClose={() => setIsModalOpen(false)} 
-          onAdd={addProduct} 
-        />
+        <ProductForm onClose={() => setIsModalOpen(false)} onAdd={addProduct} />
       )}
     </div>
   );
