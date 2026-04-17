@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚀 E-Commerce Admin Dashboard
 
-## Getting Started
+A full-stack Admin Panel built with **Next.js (App Router)** and **MongoDB**. This project was developed as a final technical assignment to demonstrate full-stack integration, database modeling with Mongoose, and collaborative team workflows.
 
-First, run the development server:
+## 📋 Project Overview
+The dashboard provides a centralized interface for admins to manage product inventory and categories. It features a secure authentication system, data visualization for stock tracking, and a full CRUD system for managing the store's data.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 🛠️ Tech Stack
+* **Framework:** Next.js 15 (App Router)
+* **Database:** MongoDB
+* **ODM:** Mongoose
+* **Data Visualization:** Recharts
+* **Styling:** Tailwind CSS & Lucide Icons
+* **State Management:** React Hooks (useState, useEffect)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ✨ Key Features
+* **🔐 Admin Auth:** Secure Login/Logout functionality with protected routes via Middleware.
+* **📊 Inventory Analytics:** Dashboard cards displaying total products, out-of-stock items, and category counts.
+* **📦 Product Management:** * Create, Read, Update, and Delete products.
+    * Fields: Name, Description, Price, Discount (fixed/percentage), and Stock.
+* **🗂️ Category System:** Full CRUD for categories with a relational link to products.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## 👥 Team Roles & Responsibilities
 
-To learn more about Next.js, take a look at the following resources:
+| Member Role | Key Responsibilities |
+| :--- | :--- |
+| **🧠 Team Leader** | Project architecture, Git workflow, MongoDB connection, total UI theme, and module integration. |
+| **🔐 Auth Developer** | Login/Logout implementation, Middleware protection, and Session management. |
+| **📊 Dashboard Dev** | Statistics logic, Dashboard UI, and Recharts integration. |
+| **📦 Products Dev** | Product UI (Tables/Forms), state management, and form validation. |
+| **🗂️ Categories Dev** | Categories UI and CRUD operations, linking categories to products. |
+| **🧩 Backend Dev** | Database Schema design (Mongoose), API Routes (CRUD), and Error handling. |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## ⚙️ Setup & Installation
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
