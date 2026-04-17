@@ -19,17 +19,34 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
 
-    const result = await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
-    });
+    // Create a safety timeout for Vercel/MongoDB hangs
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Connection timeout")), 12000)
+    );
 
-    if (result?.error) {
-      setError("Invalid email or password. Please try again.");
+    try {
+      const authPromise = signIn("credentials", {
+        email,
+        password,
+        redirect: false,
+      });
+
+      const result = await Promise.race([authPromise, timeoutPromise]) as any;
+
+      if (result?.error) {
+        setError(result.error === "CredentialsSignin" 
+          ? "Invalid email or password." 
+          : "An unexpected error occurred. Please check your database connection.");
+        setIsLoading(false);
+      } else {
+        router.push("/");
+      }
+    } catch (err: any) {
+      console.error("Login client error:", err);
+      setError(err.message === "Connection timeout"
+        ? "The server is taking too long to respond. Please check your MongoDB IP whitelist."
+        : "Failed to connect to the login service.");
       setIsLoading(false);
-    } else {
-      router.push("/");
     }
   };
 

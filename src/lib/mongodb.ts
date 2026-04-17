@@ -1,7 +1,4 @@
-import dns from "dns";
 import mongoose from "mongoose";
-
-dns.setDefaultResultOrder("ipv4first");
 
 const MONGODB_URI = process.env.MONGODB_URI!;
 
@@ -27,17 +24,20 @@ if (!global.mongoose) {
 
 async function connectDB(): Promise<typeof mongoose> {
   if (cached.conn) {
+    console.log("Using cached MongoDB connection");
     return cached.conn;
   }
 
   if (!cached.promise) {
     const opts = {
-      family: 4,
-      bufferCommands: false,
+      bufferCommands: true,
       dbName: "ecommerce-dashboard",
+      connectTimeoutMS: 10000, // 10s timeout
     };
 
+    console.log("Establishing new MongoDB connection...");
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      console.log("MongoDB connected successfully");
       return mongoose;
     });
   }
@@ -45,6 +45,7 @@ async function connectDB(): Promise<typeof mongoose> {
   try {
     cached.conn = await cached.promise;
   } catch (e) {
+    console.error("MongoDB connection error:", e);
     cached.promise = null;
     throw e;
   }
