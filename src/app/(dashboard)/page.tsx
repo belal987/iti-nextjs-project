@@ -5,7 +5,7 @@ import StatsCards from "./components/StatsCards";
 import CategoryChart from "./components/CategoryChart";
 import TopSellingChart from "./components/TopSellingChart";
 import StockVsSalesChart from "./components/StockVsSalesChart";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Filter } from "lucide-react";
 
 interface CategoryOption { _id: string; name: string; }
 
