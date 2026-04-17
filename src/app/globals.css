@@ -2,20 +2,107 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ── Design tokens ───────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Surfaces */
+  --bg-page:      #f1f5f9;   /* slate-100 */
+  --bg-card:      #ffffff;
+  --bg-card-alt:  #f8fafc;   /* slate-50 */
+  --bg-input:     #f8fafc;
+
+  /* Borders */
+  --border:       #e2e8f0;   /* slate-200 */
+  --border-focus: #3b82f6;   /* blue-500 */
+
+  /* Text */
+  --text-primary:   #0f172a; /* slate-900 */
+  --text-secondary: #475569; /* slate-600 */
+  --text-muted:     #94a3b8; /* slate-400 */
+
+  /* Chart */
+  --chart-grid:   #e8edf3;
+  --chart-axis:   #94a3b8;
+  --chart-tooltip-bg:    #ffffff;
+  --chart-tooltip-border: #e2e8f0;
+  --chart-tooltip-text:  #0f172a;
+
+  /* Shadows */
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / .07), 0 1px 2px -1px rgb(0 0 0 / .07);
+  --shadow-input: 0 1px 2px 0 rgb(0 0 0 / .05);
 }
 
 .dark {
-  --background: #121212;
-  --foreground: #e5e5e5;
+  --bg-page:      #0f0f0f;
+  --bg-card:      #171717;
+  --bg-card-alt:  #1a1a1a;
+  --bg-input:     #1e1e1e;
+
+  --border:       #262626;
+  --border-focus: #3b82f6;
+
+  --text-primary:   #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted:     #525252;
+
+  --chart-grid:   #262626;
+  --chart-axis:   #6b7280;
+  --chart-tooltip-bg:    #1e1e1e;
+  --chart-tooltip-border: #404040;
+  --chart-tooltip-text:  #f1f5f9;
+
+  --shadow-card: 0 1px 3px 0 rgb(0 0 0 / .4);
+  --shadow-input: none;
 }
 
+/* ── Base ────────────────────────────────────────── */
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text-primary);
+  background: var(--bg-page);
+  font-family: "Inter", "Segoe UI", Arial, Helvetica, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Dashboard card ──────────────────────────────── */
+.dash-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 0.875rem;
+  box-shadow: var(--shadow-card);
+  padding: 1.5rem;
+}
+
+/* ── Form controls (selects, inputs) ─────────────── */
+.ctrl {
+  background: var(--bg-input);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  box-shadow: var(--shadow-input);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  padding: 0.5rem 0.875rem;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  appearance: none;
+}
+
+.ctrl:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / .15);
+}
+
+.ctrl::placeholder {
+  color: var(--text-muted);
+}
+
+/* ── Section label ───────────────────────────────── */
+.section-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
 }
 
 @layer utilities {
