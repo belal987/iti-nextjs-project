@@ -36,6 +36,7 @@ The dashboard provides a centralized interface for admins to manage product inve
 | **🧩 Backend Dev** | Database Schema design (Mongoose), API Routes (CRUD), and Error handling. |
 
 ---
+<img width="1920" height="976" alt="products" src="https://github.com/user-attachments/assets/0d457dd1-0d88-41e8-8528-10168e770a10" />
 
 ## ⚙️ Setup & Installation
 
