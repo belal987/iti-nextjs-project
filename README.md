@@ -41,4 +41,4 @@ The dashboard provides a centralized interface for admins to manage product inve
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/your-username/your-repo-name.git](https://github.com/your-username/your-repo-name.git)
+   git clone (https://github.com/belal987/iti-nextjs-project.git)
