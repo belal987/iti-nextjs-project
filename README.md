@@ -44,6 +44,9 @@ The dashboard provides a centralized interface for admins to manage product inve
 
    <img width="1920" height="976" alt="products" src="https://github.com/user-attachments/assets/3cfdb256-b9d5-49aa-b0d8-07cbd7ef5d7a" />
 
+   <img width="1920" height="911" alt="login" src="https://github.com/user-attachments/assets/0c2da38d-b453-4a5a-8adf-71415f88f323" />
+
+
 
 ## ⚙️ Setup & Installation
 
