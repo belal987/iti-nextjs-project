@@ -19,33 +19,39 @@ export default function LoginPage() {
     setIsLoading(true);
     setError("");
 
-    // Create a safety timeout for Vercel/MongoDB hangs
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Connection timeout")), 12000)
-    );
+    // 12-second safety timeout to prevent infinite hang
+    const timeoutId = setTimeout(() => {
+      setError("The server is taking too long to respond. Please check your environment variables (NEXTAUTH_URL, NEXTAUTH_SECRET) on Vercel.");
+      setIsLoading(false);
+    }, 12000);
 
     try {
-      const authPromise = signIn("credentials", {
+      const result = await signIn("credentials", {
         email,
         password,
-        redirect: false,
+        redirect: false,  // Important: we handle redirect ourselves
       });
 
-      const result = await Promise.race([authPromise, timeoutPromise]) as any;
+      clearTimeout(timeoutId);
 
-      if (result?.error) {
-        setError(result.error === "CredentialsSignin" 
-          ? "Invalid email or password." 
-          : "An unexpected error occurred. Please check your database connection.");
+      if (!result) {
+        setError("No response from authentication server.");
+        setIsLoading(false);
+        return;
+      }
+
+      if (result.error) {
+        setError("Invalid email or password.");
         setIsLoading(false);
       } else {
+        // Always redirect to "/" — never trust result.url in production
+        // as it may point to the wrong host (localhost vs vercel)
         router.push("/");
       }
-    } catch (err: any) {
-      console.error("Login client error:", err);
-      setError(err.message === "Connection timeout"
-        ? "The server is taking too long to respond. Please check your MongoDB IP whitelist."
-        : "Failed to connect to the login service.");
+    } catch (err: unknown) {
+      clearTimeout(timeoutId);
+      console.error("Login error:", err);
+      setError("Failed to connect. Please try again.");
       setIsLoading(false);
     }
   };
