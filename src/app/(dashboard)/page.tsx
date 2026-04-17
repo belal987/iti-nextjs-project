@@ -35,22 +35,27 @@ export default function DashboardPage() {
         </div>
 
         {/* Global category filter */}
-        <div className="relative">
-          <select
-            id="global-category-filter"
-            value={categoryFilter}
-            onChange={e => setCategoryFilter(e.target.value)}
-            className="ctrl pr-9 min-w-[190px] cursor-pointer"
-          >
-            <option value="all">All Categories</option>
-            {categories.map(cat => (
-              <option key={cat._id} value={cat._id}>{cat.name}</option>
-            ))}
-          </select>
-          <ChevronDown
-            size={14}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none"
-          />
+        <div className="flex items-center gap-2">
+          <div className="shrink-0 p-2.5 bg-slate-50 dark:bg-neutral-800 border border-[var(--border)] rounded-lg text-[var(--text-muted)]">
+            <Filter size={15} />
+          </div>
+          <div className="relative">
+            <select
+              id="global-category-filter"
+              value={categoryFilter}
+              onChange={e => setCategoryFilter(e.target.value)}
+              className="ctrl pr-10 min-w-[170px] cursor-pointer"
+            >
+              <option value="all">All Categories</option>
+              {categories.map(cat => (
+                <option key={cat._id} value={cat._id}>{cat.name}</option>
+              ))}
+            </select>
+            <ChevronDown
+              size={14}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none"
+            />
+          </div>
         </div>
       </div>
 
