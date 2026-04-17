@@ -42,3 +42,16 @@ The dashboard provides a centralized interface for admins to manage product inve
 1. **Clone the repository:**
    ```bash
    git clone (https://github.com/belal987/iti-nextjs-project.git)
+
+
+   <img width="1920" height="1238" alt="Dasgboard1" src="https://github.com/user-attachments/assets/9ac60308-d1ec-4278-8e03-723081828327" />
+
+   <img width="1920" height="1238" alt="Dashboard2" src="https://github.com/user-attachments/assets/c7415d74-3c3b-479c-85f3-84d6234f45d6" />
+
+   <img width="1920" height="927" alt="categories" src="https://github.com/user-attachments/assets/dd961db7-e071-4d68-b54b-37393ea697a7" />
+
+   <img width="1920" height="976" alt="products" src="https://github.com/user-attachments/assets/3cfdb256-b9d5-49aa-b0d8-07cbd7ef5d7a" />
+
+
+
+
