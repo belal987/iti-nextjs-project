@@ -6,6 +6,7 @@ export interface IProduct extends Document {
   price: number;
   discount: string;
   stock: number;
+  sold: number;
   category: Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
@@ -39,6 +40,11 @@ const ProductSchema: Schema<IProduct> = new Schema(
       type: Number,
       required: [true, "Stock quantity is required"],
       min: [0, "Stock cannot be negative"],
+      default: 0,
+    },
+    sold: {
+      type: Number,
+      min: [0, "Sold count cannot be negative"],
       default: 0,
     },
     category: {
