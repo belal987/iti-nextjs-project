@@ -1,8 +1,11 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import Link from "next/link";
 import { addCategory, updateCategory, deleteCategory } from "./actions";
-import { Search, ChevronLeft, ChevronRight, X, Package } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, ChevronDown, X, Package, ArrowRight } from "lucide-react";
+
+type SortBy = "name-asc" | "name-desc" | "count-desc" | "count-asc";
 
 interface Category {
   id: string;
@@ -17,18 +20,25 @@ export default function CategoryManager({ categories }: { categories: Category[]
   const [currentCategory, setCurrentCategory] = useState<Category | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Search and Pagination
+  // Search, Sort & Pagination
   const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<SortBy>("name-asc");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [showAll, setShowAll] = useState(false);
 
-  const filteredCategories = useMemo(() =>
-    categories.filter((c) =>
+  const filteredCategories = useMemo(() => {
+    const filtered = categories.filter((c) =>
       c.name.toLowerCase().includes(searchTerm.toLowerCase())
-    ),
-    [categories, searchTerm]
-  );
+    );
+    return [...filtered].sort((a, b) => {
+      if (sortBy === "name-asc")   return a.name.localeCompare(b.name);
+      if (sortBy === "name-desc")  return b.name.localeCompare(a.name);
+      if (sortBy === "count-desc") return b.productCount - a.productCount;
+      if (sortBy === "count-asc")  return a.productCount - b.productCount;
+      return 0;
+    });
+  }, [categories, searchTerm, sortBy]);
 
   const paginatedCategories = useMemo(() => {
     if (showAll) return filteredCategories;
@@ -110,25 +120,44 @@ export default function CategoryManager({ categories }: { categories: Category[]
         </button>
       </div>
 
-      {/* Search */}
-      <div className="mb-6">
-        <div className="relative max-w-sm">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
-          <input
-            type="text"
-            placeholder="Search categories…"
-            value={searchTerm}
-            onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-            className="w-full pl-9 pr-8 py-2 bg-white dark:bg-[#1e1e1e] border border-gray-200 dark:border-neutral-800 rounded-md text-sm text-gray-900 dark:text-neutral-200 outline-none focus:border-blue-500 transition-colors"
-          />
-          {searchTerm && (
-            <button
-              onClick={() => setSearchTerm("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+      {/* Filter bar */}
+      <div className="dash-card !p-4 mb-6">
+        <div className="flex flex-col sm:flex-row gap-3">
+
+          {/* Search */}
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" size={15} />
+            <input
+              type="text"
+              placeholder="Search categories…"
+              value={searchTerm}
+              onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+              className="ctrl pl-9 pr-8"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+              >
+                <X size={13} />
+              </button>
+            )}
+          </div>
+
+          {/* Sort By */}
+          <div className="relative w-full sm:w-56">
+            <select
+              value={sortBy}
+              onChange={(e) => { setSortBy(e.target.value as SortBy); setCurrentPage(1); }}
+              className="ctrl pr-8 cursor-pointer"
             >
-              <X size={14} />
-            </button>
-          )}
+              <option value="name-asc">Name: A → Z</option>
+              <option value="name-desc">Name: Z → A</option>
+              <option value="count-desc">Most Products</option>
+              <option value="count-asc">Fewest Products</option>
+            </select>
+            <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
+          </div>
         </div>
       </div>
 
@@ -169,8 +198,17 @@ export default function CategoryManager({ categories }: { categories: Category[]
                     key={category.id}
                     className="hover:bg-gray-50 dark:hover:bg-[#252525] transition-colors"
                   >
-                    <td className="px-5 py-3 font-medium text-gray-900 dark:text-neutral-200">
-                      {category.name}
+                    <td className="px-5 py-3 font-medium">
+                      <Link
+                        href={`/products?category=${category.id}`}
+                        className="group inline-flex items-center gap-1.5 text-[var(--text-primary)] hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      >
+                        {category.name}
+                        <ArrowRight
+                          size={13}
+                          className="opacity-0 group-hover:opacity-100 -translate-x-1 group-hover:translate-x-0 transition-all text-blue-500"
+                        />
+                      </Link>
                     </td>
                     <td className="px-5 py-3">
                       {getProductCountBadge(category.productCount)}

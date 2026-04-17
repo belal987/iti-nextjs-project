@@ -5,8 +5,14 @@ import ProductManager from "./ProductManager";
 
 export const dynamic = "force-dynamic";
 
-export default async function ProductsPage() {
+export default async function ProductsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ category?: string; stock?: string }>;
+}) {
   await connectDB();
+
+  const { category: initialCategory, stock: initialStock } = await searchParams;
 
   const [categoriesRaw, productsRaw] = await Promise.all([
     Category.find({}).sort({ name: 1 }).lean(),
@@ -36,15 +42,21 @@ export default async function ProductsPage() {
   return (
     <div className="max-w-screen-xl mx-auto">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-neutral-100 tracking-tight">
+        <h1 className="text-2xl font-bold text-[var(--text-primary)] tracking-tight">
           Products
         </h1>
-        <p className="mt-1 text-sm text-gray-500 dark:text-neutral-500">
+        <p className="mt-1 text-sm text-[var(--text-muted)]">
           Manage your product inventory, pricing, and stock levels.
         </p>
       </div>
 
-      <ProductManager products={products} categories={categories} />
+      <ProductManager
+        products={products}
+        categories={categories}
+        initialCategory={initialCategory ?? "all"}
+        initialStock={(initialStock as "in-stock" | "low-stock" | "out-of-stock" | undefined) ?? "all"}
+      />
     </div>
   );
 }
+

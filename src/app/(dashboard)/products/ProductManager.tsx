@@ -7,6 +7,7 @@ import {
   Filter,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   X,
   SlidersHorizontal,
 } from "lucide-react";
@@ -38,9 +39,13 @@ type SortBy =
 export default function ProductManager({
   products,
   categories,
+  initialCategory = "all",
+  initialStock = "all",
 }: {
   products: Product[];
   categories: Category[];
+  initialCategory?: string;
+  initialStock?: StockStatus;
 }) {
   // Modal states
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -51,8 +56,8 @@ export default function ProductManager({
 
   // Filter & sort states
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("all");
-  const [stockStatus, setStockStatus] = useState<StockStatus>("all");
+  const [selectedCategory, setSelectedCategory] = useState(initialCategory);
+  const [stockStatus, setStockStatus] = useState<StockStatus>(initialStock);
   const [sortBy, setSortBy] = useState<SortBy>("default");
 
   // Pagination states
@@ -72,10 +77,10 @@ export default function ProductManager({
         stockStatus === "all"
           ? true
           : stockStatus === "in-stock"
-          ? p.stock > 10
-          : stockStatus === "low-stock"
-          ? p.stock > 0 && p.stock <= 10
-          : p.stock === 0;
+            ? p.stock > 10
+            : stockStatus === "low-stock"
+              ? p.stock > 0 && p.stock <= 10
+              : p.stock === 0;
       return matchesSearch && matchesCategory && matchesStock;
     });
 
@@ -171,13 +176,37 @@ export default function ProductManager({
   return (
     <div className="mt-8">
       {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 dark:text-neutral-100">
-          All Products{" "}
-          <span className="text-sm font-normal text-gray-500 dark:text-neutral-500">
-            ({filteredProducts.length})
-          </span>
-        </h2>
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+        <div>
+          <h2 className="text-xl font-semibold text-[var(--text-primary)]">
+            All Products{" "}
+            <span className="text-sm font-normal text-[var(--text-muted)]">
+              ({filteredProducts.length})
+            </span>
+          </h2>
+          {initialCategory !== "all" && selectedCategory === initialCategory && (
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
+              Pre-filtered by category —{" "}
+              <button
+                onClick={() => setSelectedCategory("all")}
+                className="text-blue-500 hover:text-blue-600 font-medium transition-colors"
+              >
+                Show all products
+              </button>
+            </p>
+          )}
+          {initialStock !== "all" && stockStatus === initialStock && (
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
+              Pre-filtered by stock status —{" "}
+              <button
+                onClick={() => setStockStatus("all")}
+                className="text-blue-500 hover:text-blue-600 font-medium transition-colors"
+              >
+                Show all products
+              </button>
+            </p>
+          )}
+        </div>
         <button
           onClick={() => setIsAddOpen(true)}
           className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition w-full md:w-auto text-sm font-medium"
@@ -187,53 +216,57 @@ export default function ProductManager({
       </div>
 
       {/* ── Filter Bar ── */}
-      <div className="bg-white dark:bg-[#1a1a1a] border border-gray-200 dark:border-neutral-800 rounded-xl p-4 mb-6 space-y-3">
+      <div className="dash-card mb-6 space-y-3 !p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" size={15} />
             <input
               type="text"
               placeholder="Search products…"
               value={searchTerm}
               onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-              className="w-full pl-9 pr-8 py-2 bg-transparent border border-gray-200 dark:border-neutral-700 rounded-md text-sm text-gray-900 dark:text-neutral-200 outline-none focus:border-blue-500 transition-colors"
+              className="ctrl pl-9 pr-8"
             />
             {searchTerm && (
-              <button onClick={() => setSearchTerm("")} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
-                <X size={14} />
+              <button onClick={() => setSearchTerm("")}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+                <X size={13} />
               </button>
             )}
           </div>
 
           {/* Category */}
           <div className="relative">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" size={15} />
             <select
               value={selectedCategory}
               onChange={(e) => { setSelectedCategory(e.target.value); setCurrentPage(1); }}
-              className="w-full pl-9 pr-4 py-2 bg-transparent border border-gray-200 dark:border-neutral-700 rounded-md text-sm text-gray-900 dark:text-neutral-200 outline-none focus:border-blue-500 transition-colors appearance-none"
+              className="ctrl pl-9 pr-8 cursor-pointer"
             >
               <option value="all">All Categories</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>{cat.name}</option>
               ))}
             </select>
+            <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
           </div>
 
           {/* Stock Status */}
           <div className="relative">
-            <SlidersHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={16} />
+            <SlidersHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" size={15} />
             <select
               value={stockStatus}
               onChange={(e) => { setStockStatus(e.target.value as StockStatus); setCurrentPage(1); }}
-              className="w-full pl-9 pr-4 py-2 bg-transparent border border-gray-200 dark:border-neutral-700 rounded-md text-sm text-gray-900 dark:text-neutral-200 outline-none focus:border-blue-500 transition-colors appearance-none"
+              className="ctrl pl-9 pr-8 cursor-pointer"
             >
               <option value="all">All Stock Levels</option>
               <option value="in-stock">In Stock (&gt;10)</option>
               <option value="low-stock">Low Stock (1–10)</option>
               <option value="out-of-stock">Out of Stock</option>
             </select>
+            <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
           </div>
 
           {/* Sort By */}
@@ -241,7 +274,7 @@ export default function ProductManager({
             <select
               value={sortBy}
               onChange={(e) => { setSortBy(e.target.value as SortBy); setCurrentPage(1); }}
-              className="w-full px-3 py-2 bg-transparent border border-gray-200 dark:border-neutral-700 rounded-md text-sm text-gray-900 dark:text-neutral-200 outline-none focus:border-blue-500 transition-colors appearance-none"
+              className="ctrl pr-8 cursor-pointer"
             >
               <option value="default">Sort: Default</option>
               <option value="price-asc">Price: Low → High</option>
@@ -249,19 +282,18 @@ export default function ProductManager({
               <option value="most-discounted">Most Discounted</option>
               <option value="best-selling">Best Selling</option>
             </select>
+            <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
           </div>
         </div>
 
         {hasActiveFilters && (
-          <div className="flex items-center justify-between pt-1">
-            <span className="text-xs text-gray-500 dark:text-neutral-500">
-              Showing {filteredProducts.length} of {products.length} products
+          <div className="flex items-center justify-between border-t border-[var(--border)] pt-2.5">
+            <span className="text-xs text-[var(--text-muted)]">
+              {filteredProducts.length} of {products.length} products
             </span>
-            <button
-              onClick={resetFilters}
-              className="text-xs text-blue-500 hover:text-blue-400 transition"
-            >
-              Clear all filters
+            <button onClick={resetFilters}
+              className="text-xs font-medium text-blue-500 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+              Clear filters
             </button>
           </div>
         )}
@@ -377,11 +409,10 @@ export default function ProductManager({
                   <button
                     key={i}
                     onClick={() => setCurrentPage(i + 1)}
-                    className={`w-7 h-7 flex items-center justify-center rounded text-xs transition ${
-                      currentPage === i + 1
+                    className={`w-7 h-7 flex items-center justify-center rounded text-xs transition ${currentPage === i + 1
                         ? "bg-blue-600 text-white"
                         : "text-gray-500 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
-                    }`}
+                      }`}
                   >
                     {i + 1}
                   </button>
