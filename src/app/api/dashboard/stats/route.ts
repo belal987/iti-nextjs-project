@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
+import mongoose from "mongoose";
 import dbConnect from "@/lib/mongodb";
 import Product from "@/models/Product";
 import Category from "@/models/Category";
 
-// GET /api/dashboard/stats - Get dashboard statistics
 export async function GET() {
   try {
     await dbConnect();
