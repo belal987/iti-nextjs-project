@@ -13,15 +13,28 @@ const handler = NextAuth({
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
-        await connectDB();
+        try {
+          console.log("Authorize attempt for:", credentials?.email);
+          await connectDB();
 
-        const user = await User.findOne({ email: credentials?.email });
-        if (!user) throw new Error("No user found");
+          const user = await User.findOne({ email: credentials?.email }).select("+password");
+          if (!user) {
+            console.log("User not found:", credentials?.email);
+            return null;
+          }
 
-        const isValid = await bcrypt.compare(credentials?.password ?? "", user.password);
-        if (!isValid) throw new Error("Wrong password");
+          const isValid = await bcrypt.compare(credentials?.password ?? "", user.password);
+          if (!isValid) {
+            console.log("Invalid password for:", credentials?.email);
+            return null;
+          }
 
-        return { id: user._id.toString(), email: user.email };
+          console.log("Login successful for:", credentials?.email);
+          return { id: user._id.toString(), email: user.email, name: user.name };
+        } catch (error) {
+          console.error("Auth authorize error:", error);
+          return null;
+        }
       },
     }),
   ],
@@ -32,6 +45,7 @@ const handler = NextAuth({
     strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
+  debug: process.env.NODE_ENV === "development",
 });
 
 export { handler as GET, handler as POST };

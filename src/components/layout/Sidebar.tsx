@@ -2,7 +2,8 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { LayoutDashboard, Package, Tag, LogOut } from "lucide-react";
+import { useSidebar } from "@/context/SidebarContext";
+import { LayoutDashboard, Package, Tag, LogOut, X } from "lucide-react";
 
 const links = [
   { href: "/",           label: "Dashboard",  Icon: LayoutDashboard },
@@ -12,14 +13,17 @@ const links = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { isOpen, close } = useSidebar();
 
   return (
     <aside
-      className="w-60 shrink-0 flex flex-col justify-between min-h-screen border-r transition-colors"
+      className={`fixed inset-y-0 left-0 z-50 w-64 lg:static lg:w-60 shrink-0 flex flex-col justify-between min-h-screen border-r transition-all duration-300 ease-in-out transform ${
+        isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+      }`}
       style={{ background: "var(--bg-card)", borderColor: "var(--border)" }}
     >
       {/* Logo */}
-      <div>
+      <div className="relative">
         <div
           className="px-5 py-5 flex items-center gap-3 border-b"
           style={{ borderColor: "var(--border)" }}
@@ -29,6 +33,12 @@ export default function Sidebar() {
           </div>
           <span className="font-bold text-[15px] text-[var(--text-primary)]">AdminPanel</span>
         </div>
+        <button 
+          onClick={close}
+          className="lg:hidden absolute right-4 top-5 text-[var(--text-muted)] hover:text-[var(--text-primary)] p-1"
+        >
+          <X size={20} />
+        </button>
 
         <nav className="px-3 py-4 space-y-0.5">
           {links.map(({ href, label, Icon }) => {
