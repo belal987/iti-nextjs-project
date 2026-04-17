@@ -39,6 +39,7 @@ export async function addProduct(formData: FormData) {
   }
 }
 
+
 export async function updateProduct(id: string, formData: FormData) {
   try {
     await connectDB();
