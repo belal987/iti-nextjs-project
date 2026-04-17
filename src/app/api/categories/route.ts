@@ -1,13 +1,34 @@
 import { NextRequest, NextResponse } from "next/server";
 import dbConnect from "@/lib/mongodb";
 import Category from "@/models/Category";
+import Product from "@/models/Product";
 
-// GET /api/categories - Get all categories
+// GET /api/categories - Get all categories with product counts
 export async function GET() {
   try {
     await dbConnect();
 
-    const categories = await Category.find({}).sort({ createdAt: -1 });
+    const categories = await Category.aggregate([
+      {
+        $lookup: {
+          from: "products",
+          localField: "_id",
+          foreignField: "category",
+          as: "products",
+        },
+      },
+      {
+        $addFields: {
+          productCount: { $size: "$products" },
+        },
+      },
+      {
+        $project: {
+          products: 0,
+        },
+      },
+      { $sort: { createdAt: -1 } },
+    ]);
 
     return NextResponse.json(categories, { status: 200 });
   } catch (error: unknown) {

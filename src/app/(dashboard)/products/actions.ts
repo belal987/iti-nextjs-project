@@ -13,6 +13,7 @@ export async function addProduct(formData: FormData) {
     const price = Number(formData.get("price"));
     const discount = formData.get("discount") as string;
     const stock = Number(formData.get("stock"));
+    const sold = Number(formData.get("sold") || 0);
     const category = formData.get("category") as string;
     
     if (!name || !description || isNaN(price) || isNaN(stock) || !category) {
@@ -25,13 +26,16 @@ export async function addProduct(formData: FormData) {
       price,
       discount: discount || "",
       stock,
+      sold: isNaN(sold) ? 0 : sold,
       category,
     });
     
     revalidatePath("/products");
+    revalidatePath("/");
     return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message || "Failed to add product" };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to add product";
+    return { success: false, error: message };
   }
 }
 
@@ -44,6 +48,7 @@ export async function updateProduct(id: string, formData: FormData) {
     const price = Number(formData.get("price"));
     const discount = formData.get("discount") as string;
     const stock = Number(formData.get("stock"));
+    const sold = Number(formData.get("sold") || 0);
     const category = formData.get("category") as string;
     
     if (!name || !description || isNaN(price) || isNaN(stock) || !category) {
@@ -56,13 +61,16 @@ export async function updateProduct(id: string, formData: FormData) {
       price,
       discount: discount || "",
       stock,
+      sold: isNaN(sold) ? 0 : sold,
       category,
     });
     
     revalidatePath("/products");
+    revalidatePath("/");
     return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message || "Failed to update product" };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to update product";
+    return { success: false, error: message };
   }
 }
 
@@ -71,8 +79,10 @@ export async function deleteProduct(id: string) {
     await connectDB();
     await Product.findByIdAndDelete(id);
     revalidatePath("/products");
+    revalidatePath("/");
     return { success: true };
-  } catch (error: any) {
-    return { success: false, error: error.message || "Failed to delete product" };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to delete product";
+    return { success: false, error: message };
   }
 }
