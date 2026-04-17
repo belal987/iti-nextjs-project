@@ -32,10 +32,10 @@ export default function CategoryManager({ categories }: { categories: Category[]
       c.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
     return [...filtered].sort((a, b) => {
-      if (sortBy === "name-asc")   return a.name.localeCompare(b.name);
-      if (sortBy === "name-desc")  return b.name.localeCompare(a.name);
+      if (sortBy === "name-asc") return a.name.localeCompare(b.name);
+      if (sortBy === "name-desc") return b.name.localeCompare(a.name);
       if (sortBy === "count-desc") return b.productCount - a.productCount;
-      if (sortBy === "count-asc")  return a.productCount - b.productCount;
+      if (sortBy === "count-asc") return a.productCount - b.productCount;
       return 0;
     });
   }, [categories, searchTerm, sortBy]);
@@ -124,24 +124,27 @@ export default function CategoryManager({ categories }: { categories: Category[]
       <div className="dash-card !p-4 mb-6">
         <div className="flex flex-col sm:flex-row gap-3">
 
-          {/* Search */}
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" size={15} />
-            <input
-              type="text"
-              placeholder="Search categories…"
-              value={searchTerm}
-              onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-              className="ctrl pl-9 pr-8"
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
-              >
-                <X size={13} />
-              </button>
-            )}
+          <div className="flex items-center gap-2 flex-1">
+            <div className="shrink-0 p-2 bg-slate-50 dark:bg-neutral-800 border border-[var(--border)] rounded-lg text-[var(--text-muted)]">
+              <Search size={15} />
+            </div>
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="Search categories…"
+                value={searchTerm}
+                onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+                className="ctrl pr-9"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors"
+                >
+                  <X size={13} />
+                </button>
+              )}
+            </div>
           </div>
 
           {/* Sort By */}
@@ -149,7 +152,7 @@ export default function CategoryManager({ categories }: { categories: Category[]
             <select
               value={sortBy}
               onChange={(e) => { setSortBy(e.target.value as SortBy); setCurrentPage(1); }}
-              className="ctrl pr-8 cursor-pointer"
+              className="ctrl pr-12 cursor-pointer"
             >
               <option value="name-asc">Name: A → Z</option>
               <option value="name-desc">Name: Z → A</option>
@@ -272,11 +275,10 @@ export default function CategoryManager({ categories }: { categories: Category[]
                   <button
                     key={i}
                     onClick={() => setCurrentPage(i + 1)}
-                    className={`w-7 h-7 flex items-center justify-center rounded text-xs transition ${
-                      currentPage === i + 1
+                    className={`w-7 h-7 flex items-center justify-center rounded text-xs transition ${currentPage === i + 1
                         ? "bg-blue-600 text-white"
                         : "text-gray-500 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
-                    }`}
+                      }`}
                   >
                     {i + 1}
                   </button>

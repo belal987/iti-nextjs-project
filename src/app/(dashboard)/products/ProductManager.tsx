@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
 import { addProduct, updateProduct, deleteProduct } from "./actions";
 import {
   Search,
@@ -53,6 +54,8 @@ export default function ProductManager({
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [currentProduct, setCurrentProduct] = useState<Product | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const router = useRouter();
 
   // Filter & sort states
   const [searchTerm, setSearchTerm] = useState("");
@@ -125,6 +128,7 @@ export default function ProductManager({
     if (res.success) {
       setIsAddOpen(false);
       (e.target as HTMLFormElement).reset();
+      router.refresh();
     } else alert(res.error);
     setIsLoading(false);
   }
@@ -135,8 +139,11 @@ export default function ProductManager({
     setIsLoading(true);
     const formData = new FormData(e.currentTarget);
     const res = await updateProduct(currentProduct.id, formData);
-    if (res.success) { setIsEditOpen(false); setCurrentProduct(null); }
-    else alert(res.error);
+    if (res.success) {
+      setIsEditOpen(false);
+      setCurrentProduct(null);
+      router.refresh();
+    } else alert(res.error);
     setIsLoading(false);
   }
 
@@ -144,7 +151,9 @@ export default function ProductManager({
     if (!confirm("Are you sure you want to delete this product?")) return;
     setIsLoading(true);
     const res = await deleteProduct(id);
-    if (!res.success) alert(res.error);
+    if (res.success) {
+      router.refresh();
+    } else alert(res.error);
     setIsLoading(false);
   }
 
@@ -219,54 +228,63 @@ export default function ProductManager({
       <div className="dash-card mb-6 space-y-3 !p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
 
-          {/* Search */}
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" size={15} />
-            <input
-              type="text"
-              placeholder="Search products…"
-              value={searchTerm}
-              onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
-              className="ctrl pl-9 pr-8"
-            />
-            {searchTerm && (
-              <button onClick={() => setSearchTerm("")}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
-                <X size={13} />
-              </button>
-            )}
+          <div className="flex items-center gap-2 lg:col-span-1">
+            <div className="shrink-0 p-2 bg-slate-50 dark:bg-neutral-800 border border-[var(--border)] rounded-lg text-[var(--text-muted)]">
+              <Search size={15} />
+            </div>
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="Search products…"
+                value={searchTerm}
+                onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+                className="ctrl pr-9"
+              />
+              {searchTerm && (
+                <button onClick={() => setSearchTerm("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-primary)] transition-colors">
+                  <X size={13} />
+                </button>
+              )}
+            </div>
           </div>
 
-          {/* Category */}
-          <div className="relative">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" size={15} />
-            <select
-              value={selectedCategory}
-              onChange={(e) => { setSelectedCategory(e.target.value); setCurrentPage(1); }}
-              className="ctrl pl-9 pr-8 cursor-pointer"
-            >
-              <option value="all">All Categories</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
-            <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
+          <div className="flex items-center gap-2">
+            <div className="shrink-0 p-2 bg-slate-50 dark:bg-neutral-800 border border-[var(--border)] rounded-lg text-[var(--text-muted)]">
+              <Filter size={15} />
+            </div>
+            <div className="relative flex-1">
+              <select
+                value={selectedCategory}
+                onChange={(e) => { setSelectedCategory(e.target.value); setCurrentPage(1); }}
+                className="ctrl pr-8 cursor-pointer"
+              >
+                <option value="all">Categories</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+              <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
+            </div>
           </div>
 
-          {/* Stock Status */}
-          <div className="relative">
-            <SlidersHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" size={15} />
-            <select
-              value={stockStatus}
-              onChange={(e) => { setStockStatus(e.target.value as StockStatus); setCurrentPage(1); }}
-              className="ctrl pl-9 pr-8 cursor-pointer"
-            >
-              <option value="all">All Stock Levels</option>
-              <option value="in-stock">In Stock (&gt;10)</option>
-              <option value="low-stock">Low Stock (1–10)</option>
-              <option value="out-of-stock">Out of Stock</option>
-            </select>
-            <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
+          <div className="flex items-center gap-2">
+            <div className="shrink-0 p-2 bg-slate-50 dark:bg-neutral-800 border border-[var(--border)] rounded-lg text-[var(--text-muted)]">
+              <SlidersHorizontal size={15} />
+            </div>
+            <div className="relative flex-1">
+              <select
+                value={stockStatus}
+                onChange={(e) => { setStockStatus(e.target.value as StockStatus); setCurrentPage(1); }}
+                className="ctrl pr-8 cursor-pointer"
+              >
+                <option value="all">Stock Levels</option>
+                <option value="in-stock">In Stock (&gt;10)</option>
+                <option value="low-stock">Low Stock (1–10)</option>
+                <option value="out-of-stock">Out of Stock</option>
+              </select>
+              <ChevronDown size={13} className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none" />
+            </div>
           </div>
 
           {/* Sort By */}
@@ -274,7 +292,7 @@ export default function ProductManager({
             <select
               value={sortBy}
               onChange={(e) => { setSortBy(e.target.value as SortBy); setCurrentPage(1); }}
-              className="ctrl pr-8 cursor-pointer"
+              className="ctrl pr-12 cursor-pointer"
             >
               <option value="default">Sort: Default</option>
               <option value="price-asc">Price: Low → High</option>
@@ -410,8 +428,8 @@ export default function ProductManager({
                     key={i}
                     onClick={() => setCurrentPage(i + 1)}
                     className={`w-7 h-7 flex items-center justify-center rounded text-xs transition ${currentPage === i + 1
-                        ? "bg-blue-600 text-white"
-                        : "text-gray-500 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
+                      ? "bg-blue-600 text-white"
+                      : "text-gray-500 dark:text-neutral-400 hover:bg-gray-100 dark:hover:bg-neutral-800"
                       }`}
                   >
                     {i + 1}
