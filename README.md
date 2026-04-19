@@ -50,6 +50,9 @@ The dashboard provides a centralized interface for admins to manage product inve
 
 ## ⚙️ Setup & Installation
 
+Deployment link 
+https://iti-nextjs-project.vercel.app/
+
 1. **Clone the repository:**
    ```bash
    git clone (https://github.com/belal987/iti-nextjs-project.git)
